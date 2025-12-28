@@ -70,14 +70,6 @@ function App() {
     setCartItems(prev => prev.filter(item => item.product.id !== productId));
   };
 
-  const changeColor = (productId: number, color: string) => {
-    setCartItems(prev =>
-      prev.map(item =>
-        item.product.id === productId ? { ...item, selectedColor: color } : item
-      )
-    );
-  };
-
   const handleLogin = (email: string, password: string) => {
     setUser({
       id: 1,
@@ -232,7 +224,6 @@ function App() {
         cartItems={cartItems}
         onUpdateQuantity={updateQuantity}
         onRemoveItem={removeItem}
-        onChangeColor={changeColor}
         onCheckout={() => {
           if (!user) {
             setIsCartOpen(false);
