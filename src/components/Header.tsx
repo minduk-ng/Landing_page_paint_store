@@ -9,6 +9,7 @@ interface HeaderProps {
   onRegisterClick: () => void;
   user: UserType | null;
   onLogout: () => void;
+  onNavigate: (page: 'home' | 'profile' | 'orders' | 'password') => void;
 }
 
 export default function Header({
@@ -17,7 +18,8 @@ export default function Header({
   onLoginClick,
   onRegisterClick,
   user,
-  onLogout
+  onLogout,
+  onNavigate
 }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
@@ -65,13 +67,40 @@ export default function Header({
                 </button>
 
                 {profileMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2">
-                    <a href="#profile" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">My Profile</a>
-                    <a href="#orders" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">Order History</a>
-                    <a href="#password" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">Change Password</a>
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
+                    <button
+                      onClick={() => {
+                        onNavigate('profile');
+                        setProfileMenuOpen(false);
+                      }}
+                      className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                    >
+                      My Profile
+                    </button>
+                    <button
+                      onClick={() => {
+                        onNavigate('orders');
+                        setProfileMenuOpen(false);
+                      }}
+                      className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                    >
+                      Order History
+                    </button>
+                    <button
+                      onClick={() => {
+                        onNavigate('password');
+                        setProfileMenuOpen(false);
+                      }}
+                      className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                    >
+                      Change Password
+                    </button>
                     <hr className="my-2" />
                     <button
-                      onClick={onLogout}
+                      onClick={() => {
+                        onLogout();
+                        setProfileMenuOpen(false);
+                      }}
                       className="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
                     >
                       Logout

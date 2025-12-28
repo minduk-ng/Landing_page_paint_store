@@ -7,6 +7,9 @@ import CartDrawer from './components/CartDrawer';
 import AuthModal from './components/AuthModal';
 import QuickViewModal from './components/QuickViewModal';
 import CheckoutModal from './components/CheckoutModal';
+import ProfilePage from './components/ProfilePage';
+import OrderHistoryPage from './components/OrderHistoryPage';
+import ChangePasswordPage from './components/ChangePasswordPage';
 import { products, brands } from './data/products';
 import { Product, CartItem, User } from './types';
 
@@ -18,6 +21,7 @@ function App() {
   const [user, setUser] = useState<User | null>(null);
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState<'home' | 'profile' | 'orders' | 'password'>('home');
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedBrand, setSelectedBrand] = useState('All');
@@ -77,10 +81,80 @@ function App() {
 
   const handleLogout = () => {
     setUser(null);
+    setCurrentPage('home');
   };
 
   const cartItemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
   const cartTotal = cartItems.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+
+  if (currentPage === 'profile' && user) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header
+          cartItemCount={cartItemCount}
+          onCartClick={() => setIsCartOpen(true)}
+          onLoginClick={() => {
+            setAuthMode('login');
+            setIsAuthModalOpen(true);
+          }}
+          onRegisterClick={() => {
+            setAuthMode('register');
+            setIsAuthModalOpen(true);
+          }}
+          user={user}
+          onLogout={handleLogout}
+          onNavigate={setCurrentPage}
+        />
+        <ProfilePage user={user} onBack={() => setCurrentPage('home')} />
+      </div>
+    );
+  }
+
+  if (currentPage === 'orders' && user) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header
+          cartItemCount={cartItemCount}
+          onCartClick={() => setIsCartOpen(true)}
+          onLoginClick={() => {
+            setAuthMode('login');
+            setIsAuthModalOpen(true);
+          }}
+          onRegisterClick={() => {
+            setAuthMode('register');
+            setIsAuthModalOpen(true);
+          }}
+          user={user}
+          onLogout={handleLogout}
+          onNavigate={setCurrentPage}
+        />
+        <OrderHistoryPage onBack={() => setCurrentPage('home')} />
+      </div>
+    );
+  }
+
+  if (currentPage === 'password' && user) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header
+          cartItemCount={cartItemCount}
+          onCartClick={() => setIsCartOpen(true)}
+          onLoginClick={() => {
+            setAuthMode('login');
+            setIsAuthModalOpen(true);
+          }}
+          onRegisterClick={() => {
+            setAuthMode('register');
+            setIsAuthModalOpen(true);
+          }}
+          user={user}
+          onLogout={handleLogout}
+          onNavigate={setCurrentPage}
+        />
+        <ChangePasswordPage onBack={() => setCurrentPage('home')} />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -97,6 +171,7 @@ function App() {
         }}
         user={user}
         onLogout={handleLogout}
+        onNavigate={setCurrentPage}
       />
 
       <Hero />
@@ -150,8 +225,14 @@ function App() {
         onUpdateQuantity={updateQuantity}
         onRemoveItem={removeItem}
         onCheckout={() => {
-          setIsCartOpen(false);
-          setIsCheckoutOpen(true);
+          if (!user) {
+            setIsCartOpen(false);
+            setAuthMode('login');
+            setIsAuthModalOpen(true);
+          } else {
+            setIsCartOpen(false);
+            setIsCheckoutOpen(true);
+          }
         }}
       />
 
