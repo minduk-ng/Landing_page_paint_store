@@ -1,4 +1,5 @@
 import { Search, SlidersHorizontal } from 'lucide-react';
+import { useState } from 'react';
 
 interface FilterSectionProps {
   searchTerm: string;
@@ -23,6 +24,41 @@ export default function FilterSection({
   onTypeChange,
   brands
 }: FilterSectionProps) {
+  const [minInput, setMinInput] = useState(priceRange[0].toString());
+  const [maxInput, setMaxInput] = useState(priceRange[1].toString());
+
+  const handleMinChange = (value: string) => {
+    setMinInput(value);
+    const num = parseInt(value) || 0;
+    if (num <= priceRange[1]) {
+      onPriceRangeChange([num, priceRange[1]]);
+    }
+  };
+
+  const handleMaxChange = (value: string) => {
+    setMaxInput(value);
+    const num = parseInt(value) || 1000000;
+    if (num >= priceRange[0]) {
+      onPriceRangeChange([priceRange[0], num]);
+    }
+  };
+
+  const handleMinSlider = (value: string) => {
+    const num = parseInt(value);
+    if (num <= priceRange[1]) {
+      onPriceRangeChange([num, priceRange[1]]);
+      setMinInput(num.toString());
+    }
+  };
+
+  const handleMaxSlider = (value: string) => {
+    const num = parseInt(value);
+    if (num >= priceRange[0]) {
+      onPriceRangeChange([priceRange[0], num]);
+      setMaxInput(num.toString());
+    }
+  };
+
   return (
     <section className="bg-white py-8 shadow-sm sticky top-[73px] z-40">
       <div className="container mx-auto px-4">
@@ -64,19 +100,73 @@ export default function FilterSection({
             <option value="both">Universal</option>
           </select>
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">
-              Price: {priceRange[0].toLocaleString()}₫ - {priceRange[1].toLocaleString()}₫
-            </label>
-            <input
-              type="range"
-              min="0"
-              max="1000000"
-              step="50000"
-              value={priceRange[1]}
-              onChange={(e) => onPriceRangeChange([0, parseInt(e.target.value)])}
-              className="w-full accent-blue-600"
-            />
+          <div className="space-y-3">
+            <label className="text-sm font-medium text-gray-700">Price Range</label>
+
+            <div className="space-y-2">
+              <div className="relative">
+                <input
+                  type="range"
+                  min="0"
+                  max="1000000"
+                  step="50000"
+                  value={priceRange[0]}
+                  onChange={(e) => handleMinSlider(e.target.value)}
+                  className="absolute w-full h-2 bg-transparent rounded-lg appearance-none cursor-pointer accent-blue-600 pointer-events-none z-5"
+                  style={{
+                    zIndex: priceRange[0] > 500000 ? 5 : 3,
+                  }}
+                />
+                <input
+                  type="range"
+                  min="0"
+                  max="1000000"
+                  step="50000"
+                  value={priceRange[1]}
+                  onChange={(e) => handleMaxSlider(e.target.value)}
+                  className="absolute w-full h-2 bg-transparent rounded-lg appearance-none cursor-pointer accent-blue-600 pointer-events-none z-4"
+                  style={{
+                    zIndex: priceRange[1] < 500000 ? 5 : 4,
+                  }}
+                />
+                <div className="relative h-2 bg-gray-200 rounded-lg mt-1">
+                  <div
+                    className="absolute h-2 bg-blue-600 rounded-lg"
+                    style={{
+                      left: `${(priceRange[0] / 1000000) * 100}%`,
+                      right: `${100 - (priceRange[1] / 1000000) * 100}%`,
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="text-xs text-gray-500">Min</label>
+                <input
+                  type="number"
+                  value={minInput}
+                  onChange={(e) => handleMinChange(e.target.value)}
+                  className="w-full px-2 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="0"
+                  min="0"
+                  max="1000000"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-gray-500">Max</label>
+                <input
+                  type="number"
+                  value={maxInput}
+                  onChange={(e) => handleMaxChange(e.target.value)}
+                  className="w-full px-2 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="1000000"
+                  min="0"
+                  max="1000000"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>

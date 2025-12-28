@@ -8,6 +8,7 @@ interface CartDrawerProps {
   onUpdateQuantity: (productId: number, quantity: number) => void;
   onRemoveItem: (productId: number) => void;
   onCheckout: () => void;
+  onChangeColor: (productId: number, color: string) => void;
 }
 
 export default function CartDrawer({
@@ -16,7 +17,8 @@ export default function CartDrawer({
   cartItems,
   onUpdateQuantity,
   onRemoveItem,
-  onCheckout
+  onCheckout,
+  onChangeColor
 }: CartDrawerProps) {
   const total = cartItems.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
 
@@ -58,13 +60,24 @@ export default function CartDrawer({
                     {item.product.name}
                   </h3>
                   <div className="flex items-center gap-2 mt-1">
-                    <div
-                      className="w-5 h-5 rounded-full border-2 border-gray-300"
-                      style={{ backgroundColor: item.selectedColor }}
-                    />
                     <span className="text-xs text-gray-500">{item.product.brand}</span>
                   </div>
-                  <div className="text-blue-600 font-bold mt-1">
+
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {item.product.colors.map((color) => (
+                      <button
+                        key={color}
+                        onClick={() => onChangeColor(item.product.id, color)}
+                        className={`w-6 h-6 rounded-full border-2 transition ${
+                          item.selectedColor === color ? 'border-blue-600 scale-110' : 'border-gray-300 hover:border-gray-400'
+                        }`}
+                        style={{ backgroundColor: color }}
+                        title={color}
+                      />
+                    ))}
+                  </div>
+
+                  <div className="text-blue-600 font-bold mt-2">
                     {item.product.price.toLocaleString()}₫
                   </div>
 
